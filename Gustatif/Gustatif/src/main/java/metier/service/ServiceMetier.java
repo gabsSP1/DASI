@@ -155,6 +155,14 @@ public class ServiceMetier {
       return l;
   }
   
+  public static List<Commande> getCommandesLivreurEnCours(Livreur livreur) throws Throwable
+  {
+      JpaUtil.creerEntityManager();
+      List<Commande> l= (new CommandeDao()).findByLivreurEncours(livreur);
+      JpaUtil.fermerEntityManager();
+      return l;
+  }
+  
   public static List<Commande> getCommandes() throws Throwable
   {
       JpaUtil.creerEntityManager();
@@ -219,6 +227,15 @@ public class ServiceMetier {
       return d;  
   }
   
+  public static Client findClientById(Long id) throws Throwable
+  {
+      JpaUtil.creerEntityManager();
+      ClientDao clientDao = new ClientDao();
+      Client c=clientDao.findById(id);
+      JpaUtil.fermerEntityManager();
+      return c;
+  }
+  
   public static Produit findProduitById(Long id) throws Throwable
   {
       JpaUtil.creerEntityManager();
@@ -268,7 +285,7 @@ public class ServiceMetier {
       JpaUtil.creerEntityManager();
       if (ServiceTechnique.affecterLivreur(commande))
       {
-        JpaUtil.creerEntityManager();
+          JpaUtil.creerEntityManager();
         CommandeDao commandeDao=new CommandeDao();
         ProduitQuantiteDao pQ= new ProduitQuantiteDao();
         //commande.getLivreur().setDisponible(false);
@@ -284,25 +301,42 @@ public class ServiceMetier {
          mailLivraison(commande);
         return true;
       }
-      JpaUtil.fermerEntityManager();
        return false; 
   }
   
-  public static boolean cloturerCommande(Long idCommande) throws Throwable
+  public static boolean cloturerCommande(Commande commande) throws Throwable
   {
-      JpaUtil.creerEntityManager();
-        CommandeDao commandeDao=new CommandeDao();
-        Commande commande=commandeDao.findById(idCommande);
-        if(commande != null)
+      if(commande != null)
         {
+            JpaUtil.creerEntityManager();
+            CommandeDao commandeDao= new CommandeDao();
             JpaUtil.ouvrirTransaction();
             commande.setDateLivraison(new Date());
+            commande.getLivreur().setDisponible(true);
             commandeDao.update(commande);
             JpaUtil.validerTransaction();
             JpaUtil.fermerEntityManager();
             return true;
         }
-        JpaUtil.fermerEntityManager();
+      return false;
+  }
+  
+  public static boolean cloturerCommandeId(Long idCommande) throws Throwable
+  {
+        JpaUtil.creerEntityManager();
+        CommandeDao commandeDao=new CommandeDao();
+        Commande commande=commandeDao.findById(idCommande);
+        if(commande != null)
+        {
+            commande.setDateLivraison(new Date());
+            commande.getLivreur().setDisponible(true);
+            JpaUtil.creerEntityManager();
+            JpaUtil.ouvrirTransaction();
+            commandeDao.update(commande);
+            JpaUtil.validerTransaction();
+            JpaUtil.fermerEntityManager();
+            return true;
+        }
         return false;
   }
   

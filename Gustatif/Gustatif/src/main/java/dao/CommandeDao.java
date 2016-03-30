@@ -82,5 +82,21 @@ public class CommandeDao {
         }     
         return commandes;
     }
+     
+     public List<Commande> findByLivreurEncours(Livreur l) throws Throwable {
+        EntityManager em = JpaUtil.obtenirEntityManager();
+        List<Commande> commandes = null;
+        try {
+            Query q = em.createQuery("SELECT l FROM Commande l where Livreur_Id = :id and dateLivraison = null");
+            q.setParameter("id", l.getId());
+            commandes = (List<Commande>) q.getResultList();
+        }
+        catch(Exception e) {
+            throw e;
+        }     
+        return commandes;
+    }
+     
+     
     
 }

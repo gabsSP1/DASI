@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,7 +29,7 @@ public class Commande implements Serializable{
     Long id;
     Date dateCommande;
     Date dateLivraison;
-    @OneToMany
+    @OneToMany(fetch= FetchType.EAGER)
     protected List<ProduitQuantite> listeProduits; 
     @ManyToOne
     Client commanditaire;
@@ -38,7 +39,7 @@ public class Commande implements Serializable{
     Restaurant restaurant;
 
     public Commande() {
-        listeProduits = new ArrayList<>();
+        //listeProduits = new ArrayList<>();
     }
     
     public Commande(Client commanditaire, Restaurant restaurant) {
